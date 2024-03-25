@@ -1,6 +1,6 @@
 # First import network module , to create our vpc and subnets  
 module "network-module" {
-  source = "../Modules/network"
+  source = "./Modules/network"
   vpc_varaiable = var.vpc_varaiable
   public_subnet = var.public_subnet
   private_subnet = var.private_subnet
@@ -25,7 +25,7 @@ module "network-module" {
 
 # Import EC2 module for creating EC2 instance and security group for this ec2 instance
 module "EC2-module" {
-  source = "../Modules/ec2"
+  source = "./Modules/ec2"
   ami = var.ami
   instance_type = var.instance_type
   subnet_id = module.network-module.public
