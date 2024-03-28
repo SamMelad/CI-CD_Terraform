@@ -91,16 +91,29 @@ jobs:
       runs-on: ubuntu-latest
       environment: Production
 
-      steps: 
-      - name: deploy copy to ec2
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ needs.Terraform_Creating_VPC_And_Instance.output.output1 }}
-          username: ec2-user
-          key: ${{  secrets.SSH_PRIVATE_KEY}}
-          port: 22
-          source: .
-          target: App
+      steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ needs.Terraform_Creating_VPC_And_Instance.outputs.ip_address }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2 Instance
+        run: |
+          scp -r ./path/to/your/code ec2-user@${{ needs.Terraform_Creating_VPC_And_Instance.outputs.ip_address }}
+          ssh ec2-user@${{ needs.Terraform_Creating_VPC_And_Instance.outputs.ip_address }} "
+            sudo yum update -y;
+            sudo yum install git python3-pip -y;
+            git clone https://github.com/SamMelad/CI-CD_Project.git;
+            cd CI-CD_Project;
+            pip3 install -r requirements.txt;
+            python3 my_package/main.py "
+
+
 
   # Deploy_TO_Created_instance:
   #   needs: [Test_Python_And_Package, Terraform_Creating_VPC_And_Instance]
