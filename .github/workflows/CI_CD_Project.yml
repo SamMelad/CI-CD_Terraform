@@ -105,10 +105,11 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
 
       - name: Wait for EC2 instance to initialize
-        run: sleep 600
+        run: sleep 300
 
       - name: Deploy to EC2 Instance
         run: |
+          ssh-keyscan -H ${{ needs.Terraform_Creating_VPC_And_Instance.outputs.output1 }} >> ~/.ssh/known_hosts
           ssh -o StrictHostKeyChecking=no ec2-user@${{ needs.Terraform_Creating_VPC_And_Instance.outputs.output1 }} "
             sudo yum update -y;
             sudo yum install git python3-pip -y;
