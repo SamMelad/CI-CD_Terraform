@@ -72,7 +72,10 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-      
+
+      - name: Debug Terraform Output
+        run: echo $(terraform output -raw EC2-IP)
+ 
       - name: Terraform Apply
         run: |
              terraform apply --auto-approve
