@@ -70,9 +70,6 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
 
-      - name: Terraform destroy
-        run: terraform destroy --auto-approve
-
       - name: Terraform Init
         run: terraform init
       
