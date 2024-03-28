@@ -47,12 +47,12 @@ resource "aws_key_pair" "deployer" {
 
 # Creating Ec2 instace 
 resource "aws_instance" "ec2-instance" {
-  ami = "ami-0c101f26f147fa7fd"
+  ami = var.ami
   instance_type = var.instance_type
   key_name      = aws_key_pair.deployer.key_name
 
   # To create EC2 instance in public subnet
-  subnet_id = var.subnet_id
+  subnet_id = aws_subnet.public.id
 
   depends_on = [ 
     aws_vpc.main_vpc,
