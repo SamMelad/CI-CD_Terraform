@@ -79,8 +79,8 @@ jobs:
       
       - id: ip_address
         run: |
-          terraform-bin output instance_ip |tr "\"" "\0" >ip
-          echo ip=$(cat ip) >> "$GITHUB_OUTPUT" 
+          INSTANCE_IP=$(terraform-bin output instance_ip | tr "\"" "\0")
+          echo "::set-output name=instance_ip::$INSTANCE_IP"
 
       - name: Print GITHUB_ENV
         run: echo $GITHUB_ENV
@@ -115,7 +115,7 @@ jobs:
 
     - name: Deploy to EC2
       run: |
-          ssh -i ~/.ssh/id_rsa ec2-user@${{ needs.terraform_deploy.outputs.output1 }}  "
+          ssh -i ~/.ssh/id_rsa ec2-user@${{ needs.Terraform_Creating_VPC_And_Instance.outputs.instance_ip }}"
             sudo yum update -y;
             sudo yum install git python3-pip -y;
             git clone https://github.com/SamMelad/CI-CD_Project.git;
