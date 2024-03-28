@@ -104,7 +104,6 @@ jobs:
 
       - name: Deploy to EC2 Instance
         run: |
-          scp -r ./path/to/your/code ec2-user@${{ needs.Terraform_Creating_VPC_And_Instance.outputs.ip_address }}
           ssh ec2-user@${{ needs.Terraform_Creating_VPC_And_Instance.outputs.ip_address }} "
             sudo yum update -y;
             sudo yum install git python3-pip -y;
