@@ -78,47 +78,61 @@ jobs:
              terraform apply --auto-approve
       
       - id: ip_address
-        run: |
-          INSTANCE_IP=$(terraform-bin output instance_ip | tr "\"" "\0")
-          echo "::set-output name=instance_ip::$INSTANCE_IP"
+        run: | 
+            terraform-bin output instance_ip |tr "\"" "\0" >ip
+            echo ip=$(cat ip) >> "$GITHUB_OUTPUT" 
 
       - name: Print GITHUB_ENV
         run: echo $GITHUB_ENV
 
 
-
-
   Deploy_TO_Created_instance:
-    needs: [Test_Python_And_Package, Terraform_Creating_VPC_And_Instance]
-    runs-on: ubuntu-latest
-    environment: Production
+      needs: [Test_Python_And_Package, Terraform_Creating_VPC_And_Instance]
+      runs-on: ubuntu-latest
+      environment: Production
 
-    steps:
+      steps: 
+        - name: deploy copy to ec2
+          uses: appleboy/scp-action@v0.1.7
+          with:
+            host: ${{ needs.terraform_deploy.outputs.output1 }}
+            username: ec2-user
+            key: ${{  secrets.SSH_PRIVATE_KEY}}
+            port: 22
+            source: .
+            target: App
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
+  # Deploy_TO_Created_instance:
+  #   needs: [Test_Python_And_Package, Terraform_Creating_VPC_And_Instance]
+  #   runs-on: ubuntu-latest
+  #   environment: Production
+
+  #   steps:
+
+  #   - name: Configure AWS credentials
+  #     uses: aws-actions/configure-aws-credentials@v1
+  #     with:
+  #       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #       aws-region: us-east-1
 
 
-    - name: Install SSH key
-      run: | 
+  #   - name: Install SSH key
+  #     run: | 
 
-        # Ensure ssh folder is exist  
-        mkdir -p ~/.ssh
+  #       # Ensure ssh folder is exist  
+  #       mkdir -p ~/.ssh
 
-        # Copy id_rsa to runner to connect to instance
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
+  #       # Copy id_rsa to runner to connect to instance
+  #       echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+  #       chmod 600 ~/.ssh/id_rsa
 
-    - name: Deploy to EC2
-      run: |
-          ssh -i ~/.ssh/id_rsa ec2-user@${{ needs.Terraform_Creating_VPC_And_Instance.outputs.instance_ip }}"
-            sudo yum update -y;
-            sudo yum install git python3-pip -y;
-            git clone https://github.com/SamMelad/CI-CD_Project.git;
-            cd CI-CD_Project;
-            pip3 install -r requirements.txt;
-            python3 my_package/main.py "
+  #   - name: Deploy to EC2
+  #     run: |
+  #         ssh -i ~/.ssh/id_rsa ec2-user@${{ needs.Terraform_Creating_VPC_And_Instance.outputs.instance_ip }}"
+  #           sudo yum update -y;
+  #           sudo yum install git python3-pip -y;
+  #           git clone https://github.com/SamMelad/CI-CD_Project.git;
+  #           cd CI-CD_Project;
+  #           pip3 install -r requirements.txt;
+  #           python3 my_package/main.py "
