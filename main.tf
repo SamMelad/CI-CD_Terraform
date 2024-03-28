@@ -40,7 +40,7 @@ output "public_subnet_id" {
 
 
 resource "aws_key_pair" "deployer" {
-  key_name   = "deployer-key"
+  key_name   = "CI/CD"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCLkMQrpUERem0297ma7FDJKTJ/abHGkHpr4WxKhiJCfcvVrAJeGguWziFtQxs4BpX0mz6gv5FWqhuXwZoeUKHt0tihy4RJWV9uoSkWMoH8OTvw6vAg77mFk8UbxszfS1zYey7W1gAH2HVqJYhboImoNGZf+8LgsGS27AoSp40sBUY6YuzMXNsei8R674DN1IeL/z1vgcuT5Kcgudn56VWEH1LsE9qOc5IAD9DssffRMYkCrQBRGpXrcVsqGIHTD9UcuD3vDvxvGnYhbBFaHkL+jGq6TzEohPgDUnMAEtDupUsYtR2x7+CRKQbl73WWU1/R0sYKT8Yd8Hmp4GlgQatn CI/CD"
 }
 
