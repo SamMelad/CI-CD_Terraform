@@ -86,16 +86,16 @@ jobs:
         run: echo $GITHUB_ENV
 
 
-  # Deploy_TO_Created_instance:
-  #     needs: [Test_Python_And_Package, Terraform_Creating_VPC_And_Instance]
-  #     runs-on: ubuntu-latest
-  #     environment: Production
+  Deploy_TO_Created_instance:
+      needs: [Test_Python_And_Package, Terraform_Creating_VPC_And_Instance]
+      runs-on: ubuntu-latest
+      environment: Production
 
-  #     steps: 
+      steps: 
       - name: deploy copy to ec2
         uses: appleboy/scp-action@v0.1.7
         with:
-          host: ${{ needs.terraform_deploy.outputs.output1 }}
+          host: ${{ needs.Terraform_Creating_VPC_And_Instance.output1 }}
           username: ec2-user
           key: ${{  secrets.SSH_PRIVATE_KEY}}
           port: 22
