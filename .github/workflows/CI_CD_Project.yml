@@ -86,6 +86,9 @@ jobs:
       - name: Print GITHUB_ENV
         run: echo $GITHUB_ENV
 
+    outputs:
+      instance_ip: ${{ steps.ip_address.outputs.instance_ip }}
+
 
 
   Deploy_TO_Created_instance:
@@ -112,11 +115,10 @@ jobs:
         # Copy id_rsa to runner to connect to instance
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        # ssh-keyscan -H $INSTANCE_IP >> ~/.ssh/known_hosts
 
     - name: Deploy to EC2
       run: |
-          ssh -i ~/.ssh/id_rsa ec2-user@$INSTANCE_IP "
+          ssh -i ~/.ssh/id_rsa ec2-user@${{ needs.Terraform_Creating_VPC_And_Instance.outputs.instance_ip }}  "
             sudo yum update -y;
             sudo yum install git python3-pip -y;
             git clone https://github.com/SamMelad/CI-CD_Project.git;
