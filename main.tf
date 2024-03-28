@@ -31,7 +31,7 @@ resource "aws_route_table_association" "public_table_assoc" {
 }
 
 # This output to refer public subnet id at the end (Used in main file to refer to public subnet)
-output "public" {
+output "public_subnet_id" {
   value = aws_subnet.public.id
 }
 
