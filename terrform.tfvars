@@ -1,5 +1,5 @@
 vpc_varaiable = "10.0.0.0/16"
 public_subnet = "10.0.1.0/24"
-ami = "ami-006dcf34c09e50022"
+ami = "ami-0c101f26f147fa7fd"
 instance_type = "t2.micro"
 region = "us-east-1"
