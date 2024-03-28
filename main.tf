@@ -47,7 +47,7 @@ resource "aws_key_pair" "deployer" {
 
 # Creating Ec2 instace 
 resource "aws_instance" "ec2-instance" {
-  ami = var.ami
+  ami = "ami-0c101f26f147fa7fd"
   instance_type = var.instance_type
   key_name      = aws_key_pair.deployer.key_name
 
