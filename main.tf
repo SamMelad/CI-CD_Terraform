@@ -1,40 +1,69 @@
-# First import network module , to create our vpc and subnets  
-module "network-module" {
-  source = "./Modules/network"
-  vpc_varaiable = var.vpc_varaiable
-  public_subnet = var.public_subnet
-  private_subnet = var.private_subnet
-
-  # Creating access control list for public subnet 
-  # Egress
-  eg_protocol = var.eg_protocol
-  eg_action = var.eg_action
-  eg_role_no = var.eg_role_no
-  eg_cidr = var.eg_cidr
-  eg_from_port = var.eg_from_port
-  eg_to_port = var.eg_to_port
-
-  # ingress
-  in_protocol = var.in_protocol
-  in_action = var.in_action
-  in_role_no = var.in_role_no
-  in_cidr = var.in_cidr
-  in_from_port = var.in_from_port
-  in_to_port = var.in_to_port
+resource "aws_vpc" "main_vpc" {
+  cidr_block = var.vpc_varaiable
 }
 
-# Import EC2 module for creating EC2 instance and security group for this ec2 instance
-module "EC2-module" {
-  source = "./Modules/ec2"
+resource "aws_subnet" "public" {
+  vpc_id = aws_vpc.main_vpc.id
+  cidr_block = var.public_subnet
+  map_public_ip_on_launch = true
+}
+
+# Creating Gateway
+resource "aws_internet_gateway" "gw" {
+  vpc_id = aws_vpc.main_vpc.id
+}
+
+
+# Creating Public Route Table For Our Public Subnet (Needed For EC2 Instance)
+resource "aws_route_table" "public_route_table" { 
+  vpc_id = aws_vpc.main_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.gw.id
+  }
+}
+
+# Associate public subnet with public route table
+resource "aws_route_table_association" "public_table_assoc" {
+    subnet_id = aws_subnet.public.id
+    route_table_id = aws_route_table.public_route_table.id
+}
+
+# This output to refer public subnet id at the end (Used in main file to refer to public subnet)
+output "public" {
+  value = aws_subnet.public.id
+}
+
+
+# -------------------------------------------------------------------------------------------
+
+
+resource "aws_key_pair" "deployer" {
+  key_name   = "deployer-key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCLkMQrpUERem0297ma7FDJKTJ/abHGkHpr4WxKhiJCfcvVrAJeGguWziFtQxs4BpX0mz6gv5FWqhuXwZoeUKHt0tihy4RJWV9uoSkWMoH8OTvw6vAg77mFk8UbxszfS1zYey7W1gAH2HVqJYhboImoNGZf+8LgsGS27AoSp40sBUY6YuzMXNsei8R674DN1IeL/z1vgcuT5Kcgudn56VWEH1LsE9qOc5IAD9DssffRMYkCrQBRGpXrcVsqGIHTD9UcuD3vDvxvGnYhbBFaHkL+jGq6TzEohPgDUnMAEtDupUsYtR2x7+CRKQbl73WWU1/R0sYKT8Yd8Hmp4GlgQatn CI/CD"
+}
+
+
+# Creating Ec2 instace 
+resource "aws_instance" "ec2-instance" {
   ami = var.ami
   instance_type = var.instance_type
-  subnet_id = module.network-module.public
+  key_name      = aws_key_pair.deployer.key_name
 
-  # Creating Security Group for this instance
-  sg_name = var.sg_name
-  vpc = module.network-module.vpc
-  from_port = var.from_port
-  to_port = var.to_port
-  protocol_name = var.protocol_name
-  blocks = var.blocks
+  # To create EC2 instance in public subnet
+  subnet_id = var.subnet_id
+
 }
+
+# This output to refer EC2 instance id at the end
+output "EC2" {
+  value = aws_instance.ec2-instance.id
+}
+
+output "EC2-IP" {
+  value = aws_instance.ec2-instance.public_ip
+}
+
+
+#------------------------------------------------------------------------------------------------------------------
