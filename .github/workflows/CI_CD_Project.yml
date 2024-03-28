@@ -82,7 +82,9 @@ jobs:
       
       - id: ip_address
         run: |
-          echo "INSTANCE_IP=$(terraform output -raw instance_ip)" >> $GITHUB_ENV
+          INSTANCE_IP=$(terraform output -raw instance_ip | tr -dc '0-9.')
+          echo "INSTANCE_IP: $INSTANCE_IP"
+          echo "INSTANCE_IP=$INSTANCE_IP" >> $GITHUB_ENV
 
       - name: Print GITHUB_ENV
         run: echo $GITHUB_ENV
