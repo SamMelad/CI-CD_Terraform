@@ -54,6 +54,15 @@ resource "aws_instance" "ec2-instance" {
   # To create EC2 instance in public subnet
   subnet_id = var.subnet_id
 
+  depends_on = [ 
+    aws_vpc.main_vpc,
+    aws_subnet.public,
+    aws_internet_gateway.gw,
+    aws_route_table.public_route_table,
+    aws_route_table_association.public_table_assoc,
+    aws_key_pair.deployer
+   ]
+
 }
 
 # This output to refer EC2 instance id at the end
