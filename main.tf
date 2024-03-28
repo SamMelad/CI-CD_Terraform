@@ -70,7 +70,7 @@ output "EC2" {
   value = aws_instance.ec2-instance.id
 }
 
-output "EC2-IP" {
+output "instance_ip" {
   value = aws_instance.ec2-instance.public_ip
 }
 
