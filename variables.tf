@@ -9,6 +9,12 @@ variable "public_subnet" {
 }
 
 
+variable "region" {
+  description = ".."
+  type = string
+}
+
+
 variable "ami" {
   description = "AMI for instance"
   type = string
