@@ -26,7 +26,3 @@ variable "instance_type" {
   type = string
 }
 
-variable "subnet_id" {
-  description = "Public Subnet for EC2"
-  type = string
-}
