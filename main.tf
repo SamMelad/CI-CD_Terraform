@@ -45,11 +45,39 @@ resource "aws_key_pair" "deployer" {
 }
 
 
+# ---------------------------------------------------------------------------------------------
+
+# Creating a security group
+resource "aws_security_group" "allow_all" {
+  name        = "allow_all"
+  description = "Allow all inbound and outbound traffic"
+  vpc_id      = aws_vpc.main_vpc.id
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+
+# ---------------------------------------------------------------------------------------------
+
 # Creating Ec2 instace 
 resource "aws_instance" "ec2-instance" {
   ami = var.ami
   instance_type = var.instance_type
   key_name      = aws_key_pair.deployer.key_name
+  vpc_security_group_ids = [aws_security_group.allow_all.id]
+
 
   # To create EC2 instance in public subnet
   subnet_id = aws_subnet.public.id

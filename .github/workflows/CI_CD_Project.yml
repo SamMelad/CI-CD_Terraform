@@ -76,9 +76,6 @@ jobs:
       - name: Terraform Apply
         run: |
              terraform apply --auto-approve
-
-      - name: Print GITHUB_ENV
-        run: echo $GITHUB_ENV
       
       - id: ip_address
         run: |
